@@ -1,0 +1,11 @@
+= sfDoctrineActAsKeyValueStorePlugin =
+
+== What It's For ==
+
+sfDoctrineActAsKeyValueStorePlugin is a Doctrine behavior that lets you
+store additional attribute values along with any Doctrine object without 
+the need for a schema change. 
+
+For more information please see 
+[http://trac.apostrophenow.org/wiki/sfDoctrineActAsKeyValueStorePlugin the Apostrophe Wiki] where 
+this plugin is documented in detail. You do not have to use Apostrophe to use this plugin.

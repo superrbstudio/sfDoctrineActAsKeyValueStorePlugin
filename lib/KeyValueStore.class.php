@@ -53,33 +53,56 @@ class KeyValueStore extends Doctrine_Template
         $this->addListener(new KeyValueStoreListener($this->_options));
     }
  
-    public function getKeyValue($key, $default = null)
+    public function aGet($key, $default = null)
+    {
+      $data = $this->aGetAll();
+      if (!isset($data[$key]))
+      {
+        return $default;
+      }
+      return $data[$key];
+    }
+    
+    public function aSet($key, $value)
     {
       $invoker = $this->getInvoker();
-      if (!isset($invoker->sfKeyValueStoreData))
+      $data = $this->aGetAll();
+      $data[$key] = $value;
+      $this->aSetAll($data);
+    }
+    
+    public function aGetAll()
+    {
+      $invoker = $this->getInvoker();
+      if (!$invoker->hasMappedValue('_sfKeyValueStoreData'))
       {
         $name = $this->_options['name'];
         $value = $invoker->$name;
-        if (substr($value, 0, 1) !== '{')
+        if (!strlen($value))
         {
           $data = array();
         }
         else
         {
-          $data = json_decode($invoker->$name, true);
+          $data = unserialize($value);
         }
-        $invoker->sfKeyValueStoreData = $data;
+        $invoker->mapValue('_sfKeyValueStoreData', $data);
       }
-      if (!isset($invoker->sfKeyValueStoreData[$key]))
+      else
       {
-        return $default;
+        $data = $invoker->_sfKeyValueStoreData;
       }
-      return $invoker->sfKeyValueStoreData[$key];
+      return $data;
     }
     
-    public function setKeyValue($key, $value)
+    public function aSetAll($data)
     {
-      $invoker->sfKeyValueStoreData[$key] = $value;
-      $invoker->sfKeyValueStoreModified = true;
+      $invoker = $this->getInvoker();
+      // mapValue is nothing but a simple associative array set,
+      // so calling it more than once is actually faster than
+      // going through __call() 
+      $invoker->mapValue('_sfKeyValueStoreData', $data);
+      $invoker->mapValue('_sfKeyValueStoreModified', true);
     }
+    
 }
